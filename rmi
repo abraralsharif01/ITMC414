@@ -1,0 +1,75 @@
+/ تعريف الحزمة التي ينتمي إليها الكود
+package com.example.rmi;
+//ذه الدالة ستقوم بالاتصال بخادم بعيد لإجراء العملية
+// استيراد المكتبات المطلوبة
+import android.annotation.SuppressLint;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+
+// الفئة الرئيسية للتطبيق والتي تمتد من AppCompatActivity
+public class MainActivity extends AppCompatActivity {
+
+    // تعريف عناصر واجهة المستخدم
+    EditText etA, etB; // حقلان لإدخال الأرقام
+    Button btnAdd; // زر لإجراء عملية الجمع
+    TextView tvResult; // نص لعرض النتيجة
+
+    // دالة onCreate التي تنفذ عند إنشاء النشاط
+    @SuppressLint("MissingInflatedId")
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // تعيين ملف التخطيط (الواجهة) لهذا النشاط
+        setContentView(R.layout.activity_main);
+
+        // ربط عناصر واجهة المستخدم مع المتغيرات في الكود
+        etA = findViewById(R.id.etA);
+        etB = findViewById(R.id.etB);
+        btnAdd = findViewById(R.id.btnAdd);
+        tvResult = findViewById(R.id.tvResult);
+
+        // إعداد مستمع للنقر على زر الجمع
+        btnAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // الحصول على النص المدخل في الحقلين
+                String inputA = etA.getText().toString();
+                String inputB = etB.getText().toString();
+
+                // التحقق من أن الحقلين غير فارغين
+                if (inputA.isEmpty() || inputB.isEmpty()) {
+                    Toast.makeText(MainActivity.this, "يرجى إدخال الأرقام", Toast.LENGTH_SHORT).show();
+                    return; // الخروج من الدالة إذا كان أحدهما فارغًا
+                }
+
+                try {
+                    // تحويل النص إلى أعداد صحيحة
+                    int a = Integer.parseInt(inputA);
+                    int b = Integer.parseInt(inputB);
+
+                    // استدعاء دالة الجمع (المحاكية لـ RMI)
+                    int result = remoteAdd(a, b);
+
+                    // عرض النتيجة في TextView
+                    tvResult.setText("النتيجة: " + result);
+                } catch (NumberFormatException e) {
+                    // معالجة الخطأ إذا لم يكن الإدخال أرقامًا صحيحة
+                    Toast.makeText(MainActivity.this, "يرجى إدخال أرقام صحيحة", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    // دالة محاكية لاستدعاء RMI (Remote Method Invocation)
+    // تقوم بجمع رقمين وإعادة النتيجة
+    private int remoteAdd(int a, int b) {
+        // في تطبيق حقيقي، هنا سيتم الاتصال بخادم بعيد
+        // لكن في هذا المثال، نكتفي بإجراء عملية الجمع محليًا
+        return a + b;
+    }
+}
